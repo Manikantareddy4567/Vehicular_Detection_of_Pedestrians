@@ -44,7 +44,7 @@ The system’s structure and interactions are represented using UML diagrams, in
 ## Installation
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/RohithgowdM/Vehicle-pedestrian-detection.git
+    git clone https://github.com/Manikantareddy4567/Vehicle-pedestrian-detection.git
     cd vehicle-pedestrian-detection
     ```
 
