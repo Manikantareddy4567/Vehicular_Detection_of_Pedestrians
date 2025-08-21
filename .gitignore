@@ -1,6 +1,7 @@
 # Virtual environment
 venv/
 out/
+UML-files/
 
 # Uploads folder (user videos, images, etc.)
 pedestrian-detection/uploads/
