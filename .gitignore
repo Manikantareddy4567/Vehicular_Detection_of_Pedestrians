@@ -1,0 +1,26 @@
+# Virtual environment
+venv/
+out/
+
+# Uploads folder (user videos, images, etc.)
+pedestrian-detection/uploads/
+
+# Large model & video files
+*.onnx
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS-specific files
+.DS_Store
+Thumbs.db

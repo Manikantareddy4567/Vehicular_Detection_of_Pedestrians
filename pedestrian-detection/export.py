@@ -1,3 +1,4 @@
+
 # import pyttsx3
 
 # engine = pyttsx3.init()
@@ -14,3 +15,4 @@ import geocoder
 g = geocoder.ip('me')
 location = g.latlng
 print(f"Latitude: {location[0]}, Longitude: {location[1]}")
+

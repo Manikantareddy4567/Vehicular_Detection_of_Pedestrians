@@ -1,79 +1,197 @@
-# Real-Time Vehicle and Pedestrian Detection System
+# Vehicular Prediction of Pedestrians
 
-## Overview
-This project aims to develop a real-time vehicle and pedestrian detection system to enhance driving safety. By utilizing the YOLOv9 object detection model, the system accurately identifies vehicles and pedestrians, estimates their distance from the vehicle, and triggers alerts when necessary. The system is designed to operate in real-time, providing critical information to drivers to prevent potential collisions.
+A Flask-based real‑time application that uses **Ultralytics YOLO** and **OpenCV** to detect pedestrians and vehicles from a webcam or uploaded media, estimate proximity, track motion via optical flow, and trigger audible alerts when pedestrians are near.
+
+> **Tech stack:** Python, Flask, OpenCV, Ultralytics YOLO, NumPy. Windows beep alerts via `winsound`.
+
+---
+
+## Table of Contents
+
+* [Features](#features)
+* [Project Media (screenshots/)](#project-media-screenshots)
+* [Folder Structure](#folder-structure)
+* [Setup](#setup)
+* [Running the App](#running-the-app)
+* [API Endpoints](#api-endpoints)
+* [Configuration](#configuration)
+* [Usage Tips](#usage-tips)
+* [Troubleshooting](#troubleshooting)
+* [License](#license)
+
+---
 
 ## Features
-- **Real-Time Object Detection**: Utilizes the YOLOv9 model to detect vehicles and pedestrians in video frames.
-- **Distance Estimation**: Implements depth estimation algorithms to calculate the distance between the vehicle and detected objects.
-- **Alert System**: Triggers visual and auditory alerts when pedestrians are detected within a critical distance threshold.
-- **Responsive Frontend**: User interface developed using HTML, CSS, and JavaScript, allowing users to upload videos, view live camera feeds, and monitor real-time detection statistics.
-- **Backend Integration**: Built with Flask, the backend handles video processing, object detection, and alert generation.
 
-## System Architecture
-- **Camera Integration**: Captures real-time video footage from a vehicle-mounted camera.
-- **Object Detection**: YOLOv9 processes each frame to identify vehicles and pedestrians, providing bounding boxes and class labels.
-- **Distance Estimation**: Estimates the distance of detected objects based on bounding box sizes and known dimensions.
-- **Alert Mechanism**: Configurable thresholds trigger alerts when objects are within a predefined proximity to the vehicle.
+* Real‑time detection with **YOLO** (`yolov9c.pt` by default).
+* Tracks motion using **Lucas–Kanade optical flow** and overlays speed & direction.
+* Estimates pedestrian distance (configurable constants) and triggers a **beep alert** when too close.
+* Works with **webcam**, **video files**, and **photos**.
+* Simple JSON **stats** endpoint for integration/dashboards.
 
-## UML Diagrams
-The system’s structure and interactions are represented using UML diagrams, including:
-- **Use Case Diagrams**
-- **Class Diagrams**
-- **Sequence Diagrams**
-- **Activity Diagrams**
+---
 
-## Development
-### Frontend
-- **Video and Photo Upload**: Allows users to upload media files for analysis.
-- **Live Camera Feed**: Displays real-time video from the camera.
-- **Statistics Display**: Shows real-time detection statistics and alerts.
-- **Technology Stack**: HTML, CSS, JavaScript.
+## Project Media (screenshots/)
 
-### Backend
-- **Flask Server**: Handles server-side logic, including video processing and object detection.
-- **YOLOv9 Integration**: Detects vehicles and pedestrians in video frames.
-- **Alert System**: Generates notifications when objects are within a critical distance.
-- **Technology Stack**: Python, Flask, OpenCV, YOLOv9.
+This project includes a top-level `screenshots/` folder with supporting media:
 
-### Real-Time Processing
-- **Frame Capture**: Captures frames from the camera feed using OpenCV.
-- **Object Detection**: Analyzes each frame with YOLOv9.
-- **Distance Estimation**: Uses bounding box dimensions to estimate object distance.
+```
+screenshots/
+├─ screenshot/   # Sample screenshots of the application UI/overlays
+├─ video/        # Demo videos showing detections and tracking in action
+└─ details/      # Extra images or annotated frames explaining specific features
+```
 
-## Installation
-1. **Clone the Repository**:
-    ```bash
-    git clone https://github.com/Manikantareddy4567/Vehicle-pedestrian-detection.git
-    cd vehicle-pedestrian-detection
-    ```
+These assets help visualize functionality, expected outputs, and example scenarios. If you use Git, consider excluding large media in `.gitignore` or storing videos in releases/cloud storage.
 
-2. **Install Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+---
 
-3. **Run the Application**:
-    ```bash
-    python app.py
-    ```
+## Folder Structure
 
-## Usage
-1. **Upload Video**: Upload a video file or use a live camera feed.
-2. **Start Detection**: Click on the start button to begin real-time detection.
-3. **Monitor Alerts**: The system will alert you if any object is detected within the critical distance.
+```
+project-root/
+├─ app.py                # Flask application (server + detection logic)
+├─ templates/
+│  └─ index.html         # Frontend page to view streams
+├─ uploads/              # Saved uploads (created at runtime)
+├─ screenshots/          # Project media (see section above)
+│  ├─ screenshot/
+│  ├─ video/
+│  └─ details/
+├─ yolov9c.pt            # YOLO model weights (provide your own file)
+├─ requirements.txt      # Python dependencies
+└─ README.md             # This file
+```
 
-## Testing
-- **Unit Testing**: Individual components like the object detection and distance estimation functions are tested in isolation.
-- **Integration Testing**: The interaction between the detection module, distance estimation, and alert system is validated.
-- **Real-World Testing**: System performance is evaluated under various driving conditions, including different lighting, weather, and traffic situations.
+---
 
-## Future Enhancements
-- **Multilingual Support**: Adding support for multiple languages in the user interface.
-- **Advanced Distance Estimation**: Implementing more sophisticated depth estimation techniques.
-- **Expanded Object Classes**: Extending detection capabilities to other objects like cyclists and road signs.
+## Setup
 
-## Acknowledgements
-- **YOLOv9**: For the object detection model.
-- **Flask**: For the web framework.
-- **OpenCV**: For the image processing library.
+1. **Create & activate a virtual environment** (Windows PowerShell):
+
+   ```powershell
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+
+2. **Install dependencies**:
+
+   ```powershell
+   pip install --upgrade pip setuptools wheel
+   pip install -r requirements.txt
+   ```
+
+3. **Model weights**: Place your YOLO weights file at `./yolov9c.pt` (or update the path in `app.py`).
+
+> **Note (Windows):** Audible alerts use `winsound.Beep`. On non‑Windows systems, replace with a cross‑platform alternative (e.g., `playsound`, `pyaudio`, or remove alerts).
+
+
+
+## Running the App
+
+From the project root with the virtual environment activated:
+
+```powershell
+python app.py
+```
+
+The server starts in debug mode at `http://127.0.0.1:5000/`.
+
+* Open your browser to `/` to view the UI.
+* Use the **Toggle Camera** control to start/stop the webcam feed (`/video_feed`).
+
+---
+
+## API Endpoints
+
+### `GET /`
+
+Renders the main UI (`templates/index.html`).
+
+### `GET /video_feed`
+
+Returns an MJPEG stream from the active webcam. Returns **204** if the camera is off.
+
+### `POST /toggle_camera`
+
+Toggles the webcam capture.
+
+* **Response**: `"Camera turned on"` or `"Camera turned off"`.
+
+### `POST /upload`
+
+Uploads a file (any media) and stores it in `uploads/`.
+
+* **Form field**: `file`
+* **Response**: Saved filename.
+
+### `POST /upload_video_feed`
+
+Streams detection results for an uploaded video file as MJPEG.
+
+* **Form field**: `file`
+* **Response**: MJPEG multipart stream.
+
+### `POST /upload_photo`
+
+Runs detection on a single photo and returns the annotated image (`image/jpeg`).
+
+* **Form field**: `file`
+* **Response**: JPEG image with boxes/labels.
+
+### `GET /stats`
+
+Returns cumulative detection stats since server start.
+
+* **Response (JSON)**:
+
+  ```json
+  {
+    "total_detections": 0,
+    "vehicles_detected": 0,
+    "pedestrians_detected": 0
+  }
+  ```
+
+---
+
+## Configuration
+
+Key constants are defined in `app.py`:
+
+* **Model path**: `model = YOLO('./yolov9c.pt')`
+* **Classes**:
+
+  * `HUMAN_CLASS = 0`
+  * `VEHICLE_CLASSES = [1, 2, 3, 5, 7]`
+* **Distance estimation**:
+
+  * `KNOWN_WIDTH = 0.5` (meters; approx. shoulder width)
+  * `FOCAL_LENGTH = 700` (pixels; calibrate for your camera)
+* **Optical flow (Lucas–Kanade)**: `lk_params` dict.
+
+> Tune `KNOWN_WIDTH`, `FOCAL_LENGTH`, and the threshold in `is_near(distance, threshold=4.0)` to match your camera and safety criteria.
+
+---
+
+## Usage Tips
+
+* For best results, use well‑lit scenes and a stable camera.
+* Ensure `yolov9c.pt` matches the classes you expect (COCO‑like indexing is assumed in this app).
+* If performance is low, consider:
+
+  * Smaller input frames (resize before inference),
+  * A lighter YOLO model variant,
+  * Processing every Nth frame (already supported via `frame_count`).
+
+---
+
+## Troubleshooting
+
+* **Matplotlib build error on Windows (Meson/Ninja/GCC)**: upgrade `pip`, use prebuilt wheels or pin `matplotlib==3.8.4` if needed.
+* **Camera not opening**: another app may be using the webcam; check device permissions.
+* **No model file**: make sure `yolov9c.pt` exists at the configured path.
+* **High CPU usage**: reduce frame size or inference frequency.
+
+---
+

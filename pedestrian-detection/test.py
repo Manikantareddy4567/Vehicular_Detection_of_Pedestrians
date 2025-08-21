@@ -7,4 +7,5 @@ model = YOLO('./yolov9c.pt')
 results = model.predict(f'R:\RGM\photos\BR HILLS\IMG-20220716-WA0036.jpg')
 
 # Display results
+
 results[0].show()
